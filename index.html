@@ -77,6 +77,8 @@
   .m{display:inline-flex; align-items:center; gap:4px; background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:4px 10px; font-size:12.5px}
   .m .note{color:var(--faint); font-size:11px}
   .chip-del{cursor:pointer; color:var(--danger); font-weight:900; margin-left:3px; font-size:11px}
+  .cmt-del{appearance:none; border:0; background:transparent; cursor:pointer; font-size:14px; margin-left:8px; padding:0 2px; opacity:.55; line-height:1}
+  .cmt-del:hover{opacity:1}
   .docs{display:inline-flex; align-items:center; gap:7px; text-decoration:none; font-weight:700; font-size:13px;
     color:var(--tc); padding:9px 14px; border-radius:var(--radius-sm); border:1px solid var(--tc); background:#fff; transition:background .15s,color .15s}
   .docs:hover{background:var(--tc); color:#fff}
@@ -248,7 +250,7 @@ const PROGRAM = {
       {no:'4',date:'7/27 (일)',time:'15:00–17:00',mode:'한국 offline · 일본 online',detail:['15화까지 피드백 (1:1)','현장 Q&A / 수료증 수여','단체사진 촬영']}
     ],
     weeks:[
-      {tag:'1주차',date:'7/6', rows:[['15:00–16:00','인사 / 워크샵 취지 및 숏폼시장·비글루 소개','—'],['16:00–16:15','쉬는 시간 / 비밀유지계약서 작성 (한국작가 대상)','—'],['16:15–16:20','팀 발표','—'],['16:20–16:25','[숙제내용 소개] 아이템 정하기 — AI 대본 / AI 드라마 아이템 / 히트작 장르별 추천(현대로맨스·로판·BL·남성향·애니메이션)','—'],['16:30–17:00','2주차 소개 및 마무리 / 담당 PD 컨택포인트 공유 / CM별 진행','—']],
+      {tag:'1주차',date:'7/6', rows:[['15:00–16:00','인사 / 워크샵 취지 및 숏폼시장·비글루 소개','—'],['16:00–16:15','쉬는 시간 / 비밀유지계약서 작성 (한국작가 대상)','—'],['16:15–16:20','팀 발표','—'],['16:20–16:25','[숙제내용 소개] 아이템 정하기 — AI 대본 / AI 드라마 아이템 / 히트작 장르별 추천(현대로맨스·로판·BL·남성향·애니메이션)','—'],['16:30–17:00','2주차 소개 및 마무리 / 담당 PD 컨택포인트 공유 / PD별 진행','—']],
         hwTitle:'★ 2주차 숙제 : 아이템 정하기', hwBody:['1. 아이템 — 로그라인 + 줄거리 A4 (기·승·전·결 포함) + 캐릭터 설명','2. 장르 — 로맨스 / 로판 / 판타지 / BL / 애니메이션 / 남성향 중 택 1','제출기한 : 7/12(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
       {tag:'2주차',date:'7/13',rows:[['15:00–16:00','한지원 작가 강연','—'],['16:00–16:10','쉬는 시간','—'],['16:10–16:50','작가 아이템 발표 / 피드백','—'],['16:50–17:00','3주차 과제 발표 / 마무리 (*비글루 내 평가 체크리스트 공유)','—']],
         hwTitle:'★ 3주차 숙제 : 무료회차(1–10) 대본', hwBody:['· 클리프행어 필수','· 히트작 대본 무료회차분 (*선정)','제출기한 : 7/19(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
@@ -269,7 +271,7 @@ const PROGRAM = {
       {no:'4',date:'7/27 (日)',time:'15:00–17:00',mode:'韓国 offline · 日本 online',detail:['15話までフィードバック(1:1)','現場Q&A / 修了証授与','集合写真撮影']}
     ],
     weeks:[
-      {tag:'1週目',date:'7/6', rows:[['15:00–16:00','挨拶 / ワークショップ趣旨・ショートフォーム市場・ビグル紹介','—'],['16:00–16:15','休憩 / 秘密保持契約(韓国作家対象)','—'],['16:15–16:20','チーム発表','—'],['16:20–16:25','[宿題内容の紹介] アイテム決め — AI台本 / AIドラマのアイテム / ヒット作ジャンル別おすすめ(現代ロマンス・ロマンスファンタジー・BL・男性向・アニメ)','—'],['16:30–17:00','2週目案内・まとめ / 担当PDコンタクト共有 / CM別進行','—']],
+      {tag:'1週目',date:'7/6', rows:[['15:00–16:00','挨拶 / ワークショップ趣旨・ショートフォーム市場・ビグル紹介','—'],['16:00–16:15','休憩 / 秘密保持契約(韓国作家対象)','—'],['16:15–16:20','チーム発表','—'],['16:20–16:25','[宿題内容の紹介] アイテム決め — AI台本 / AIドラマのアイテム / ヒット作ジャンル別おすすめ(現代ロマンス・ロマンスファンタジー・BL・男性向・アニメ)','—'],['16:30–17:00','2週目案内・まとめ / 担当PDコンタクト共有 / PD別進行','—']],
         hwTitle:'★ 2週目 宿題 : アイテム決め', hwBody:['1. アイテム — ログライン + あらすじ A4 (起承転結を含む) + キャラ説明','2. ジャンル — ロマンス / ロマンスファンタジー / ファンタジー / BL / アニメ / 男性向 から1つ','提出期限 : 7/12(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
       {tag:'2週目',date:'7/13',rows:[['15:00–16:00','ハン・ジウォン作家 講演','—'],['16:00–16:10','休憩','—'],['16:10–16:50','作家 アイテム発表 / フィードバック','—'],['16:50–17:00','3週目課題 発表 / まとめ (*ビグル内 評価チェックリスト共有)','—']],
         hwTitle:'★ 3週目 宿題 : 無料話(1–10) 台本', hwBody:['· クリフハンガー必須','· ヒット作 台本の無料話分 (*選定)','提出期限 : 7/19(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
@@ -301,7 +303,7 @@ const T = {
     rosterEmptyBody:'관리자로 로그인하면 이 화면에서 작가·DOCS 링크를 추가할 수 있습니다.',
     docsUnset:'DOCS 링크 미설정', docsOpen:'열기 ↗',
     phMemberName:'작가명', phMemberNote:'비고', addBtn:'＋ 추가', saveBtn:'저장',
-    cmLabel:'CM', docsLabel:'DOCS URL', delConfirm:'삭제할까요?',
+    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'삭제할까요?',
     newTeamKey:'팀키(예: G)', addTeamBtn:'＋ 새 팀',
     pgRound:'회차', pgNotice:'📌 안내',
     cpTitle:'코멘트 남기기', cpHint:'한국어·일본어 어느 쪽으로 써도 양쪽 번역이 함께 저장됩니다.',
@@ -328,7 +330,7 @@ const T = {
     rosterEmptyBody:'管理者でログインすると、この画面から作家・DOCSリンクを追加できます。',
     docsUnset:'DOCSリンク未設定', docsOpen:'を開く ↗',
     phMemberName:'作家名', phMemberNote:'備考', addBtn:'＋ 追加', saveBtn:'保存',
-    cmLabel:'CM', docsLabel:'DOCS URL', delConfirm:'削除しますか?',
+    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'削除しますか?',
     newTeamKey:'チームキー(例: G)', addTeamBtn:'＋ 新規チーム',
     pgRound:'回', pgNotice:'📌 案内',
     cpTitle:'コメントを残す', cpHint:'韓国語・日本語どちらで書いても、両方の訳が一緒に保存されます。',
@@ -439,7 +441,7 @@ async function loadComments(){
   try{
     const { data, error } = await db.from('comments').select('*').order('created_at',{ascending:false}).limit(300);
     if(error) throw error;
-    STATE.comments=(data||[]).map(r=>({ week:r.week||'', team:r.team||'', writer:r.writer||'', author:r.author||'',
+    STATE.comments=(data||[]).map(r=>({ id:r.id, week:r.week||'', team:r.team||'', writer:r.writer||'', author:r.author||'',
       original:r.original||'', ko:r.ko||'', ja:r.ja||'', date:(r.created_at||'').slice(0,10) }));
   }catch(e){ STATE.comments=[]; }
 }
@@ -498,7 +500,7 @@ function teamCard(x){
       '</div>';
   }
   return '<div class="team" style="--tc:'+col+'"><div class="glyph">'+esc(x.team)+'</div>'+
-    '<div class="head"><span class="name">TEAM '+esc(x.team)+'</span><span class="cm">CM · '+esc(x.cm||'-')+'</span><span class="count">'+(x.members||[]).length+t('uPeople')+'</span></div>'+
+    '<div class="head"><span class="name">TEAM '+esc(x.team)+'</span><span class="cm">PD · '+esc(x.cm||'-')+'</span><span class="count">'+(x.members||[]).length+t('uPeople')+'</span></div>'+
     '<div class="members">'+members+'</div>'+docs+admin+'</div>';
 }
 function newTeamCard(){
@@ -569,7 +571,8 @@ function commentHTML(c,fresh){
   return '<div class="comment'+(fresh?' fresh':'')+'"><div class="meta">'+
     (c.week?'<span class="pill week">'+esc(weekLabel(c.week))+'</span>':'')+teamPill+
     '<span class="writer">'+esc(c.writer)+'</span>'+
-    '<span class="right">'+roleBadge(c.author)+(c.date?' · '+esc(c.date):'')+'</span></div>'+
+    '<span class="right">'+roleBadge(c.author)+(c.date?' · '+esc(c.date):'')+'</span>'+
+    ((STATE.isAdmin && c.id)?'<button class="cmt-del" data-id="'+attr(c.id)+'" title="'+attr(t('delConfirm'))+'">🗑</button>':'')+'</div>'+
     '<div class="orig">'+esc(c.original)+'</div>'+
     '<div class="langs"><div class="lang"><div class="lh">🇰🇷 한국어</div><div class="lt">'+esc(c.ko||'—')+'</div></div>'+
     '<div class="lang"><div class="lh">🇯🇵 日本語</div><div class="lt">'+esc(c.ja||'—')+'</div></div></div></div>';
@@ -597,6 +600,7 @@ function wireFeedback(){
   bind('flt_week','change',e=>{STATE.filterWeek=e.target.value; renderFeed();});
   bind('flt_team','change',e=>{STATE.filterTeam=e.target.value; renderFeed();});
   bind('btnRefresh','click',async()=>{ await loadComments(); renderFeed(); });
+  document.querySelectorAll('.cmt-del').forEach(el=> el.addEventListener('click', ()=> delComment(el.getAttribute('data-id'))));
   const btn=document.getElementById('f_submit'); if(btn) btn.addEventListener('click', submitComment);
 }
 function bind(id,ev,fn){ const el=document.getElementById(id); if(el) el.addEventListener(ev,fn); }
@@ -634,9 +638,11 @@ async function submitComment(){
   try{
     const tr=await bilingual(original);
     const row={ week, team, writer, author: role, original, ko:tr.ko, ja:tr.ja };
-    const { error }=await db.from('comments').insert(row);
+    const { data, error }=await db.from('comments').insert(row).select();
     if(error) throw error;
-    STATE.comments.unshift(Object.assign({ date:new Date().toISOString().slice(0,10) }, row));
+    const saved=Object.assign({ date:new Date().toISOString().slice(0,10) }, row);
+    if(data && data[0] && data[0].id) saved.id=data[0].id;
+    STATE.comments.unshift(saved);
     document.getElementById('f_original').value='';
     msg.className='form-msg ok'; msg.textContent=t('msgSaved');
     renderFeed();
@@ -644,6 +650,16 @@ async function submitComment(){
     setTimeout(()=>{ if(msg) msg.textContent=''; }, 2500);
   }catch(e){ msg.className='form-msg err'; msg.textContent=t('msgFail'); }
   finally{ btn.disabled=false; }
+}
+
+async function delComment(id){
+  if(!id) return; if(!window.confirm(t('delConfirm'))) return;
+  try{
+    const { error }=await db.from('comments').delete().eq('id',id);
+    if(error) throw error;
+    STATE.comments=STATE.comments.filter(c=>c.id!==id);
+    renderFeed();
+  }catch(e){ alert(t('msgFail')); }
 }
 
 /* ── 閲覧パスコード（合言葉）ゲート ── */
