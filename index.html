@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>라이터스룸 · 공개 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1B2F; --muted:#6C6C84; --faint:#9A9AB0;
+    --line:#E8E8F1; --bg:#FAFAFD; --card:#FFFFFF;
+    --spine:#2D2A6E; --spine-2:#403B9E; --soft:#F1F1F8;
+    --warn-bg:#FFF6E2; --warn-ink:#7A5C00; --warn-line:#F2C94C;
+    --ok:#1A9D6A; --danger:#D8443B;
+    --radius:14px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(20,20,50,.05), 0 10px 30px rgba(20,20,50,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg); color:var(--ink);
+    font-family:'Noto Sans KR','Noto Sans JP',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 18px 64px}
+  .eyebrow{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); font-weight:700}
+  a{color:inherit}
+
+  .topbar{position:sticky; top:0; z-index:20; background:rgba(250,250,253,.86);
+    backdrop-filter:saturate(160%) blur(8px); border-bottom:1px solid var(--line);}
+  .topbar .inner{max-width:1080px; margin:0 auto; padding:14px 18px; display:flex; align-items:center; gap:10px}
+  .brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+  .brand h1{font-size:18px; font-weight:900; letter-spacing:-.01em; margin:0; white-space:nowrap}
+  .brand .sub{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .who{margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px}
+  .langbtn,.adminbtn{appearance:none; border-radius:999px; padding:6px 12px; font:inherit; font-size:12px; font-weight:800; cursor:pointer; transition:filter .15s}
+  .langbtn{border:1px solid #DAD8F6; background:#EEEDFB; color:var(--spine)}
+  .langbtn:hover{filter:brightness(.97)}
+  .adminbtn{border:1px solid var(--line); background:#fff; color:var(--muted)}
+  .adminbtn:hover{background:var(--soft); color:var(--ink)}
+  .langbtn:focus-visible,.adminbtn:focus-visible{outline:2px solid var(--spine-2); outline-offset:2px}
+  .badge{font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:#F3F3F8}
+  .badge.live{color:var(--ok); background:#E6F6EF; border-color:#BFE8D5}
+
+  .setup{margin:14px 0; background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:var(--radius); padding:14px 16px; color:var(--warn-ink); font-size:13px}
+  .setup b{display:block; margin-bottom:4px}
+  .setup code{background:#fff; border:1px solid var(--warn-line); border-radius:6px; padding:1px 6px; font-size:12px}
+
+  .tabs{display:flex; gap:4px; margin:20px 0 8px; overflow-x:auto; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{appearance:none; border:0; background:transparent; cursor:pointer; padding:10px 16px;
+    border-radius:999px; font:inherit; font-weight:700; color:var(--muted); white-space:nowrap; transition:background .18s,color .18s}
+  .tab:hover{color:var(--ink); background:var(--soft)}
+  .tab[aria-selected="true"]{color:#fff; background:var(--spine)}
+  .tab:focus-visible{outline:2px solid var(--spine-2); outline-offset:2px}
+
+  .view{animation:fade .26s ease both}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+  .editflag{display:inline-block; margin-left:8px; font-size:11px; font-weight:800; color:#fff; background:var(--ok); padding:2px 9px; border-radius:999px; vertical-align:middle}
+
+  .chips{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0 8px}
+  .chip{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow)}
+  .chip .k{font-size:12px; color:var(--muted); font-weight:600}
+  .chip .v{font-size:24px; font-weight:900; letter-spacing:-.02em; margin-top:2px}
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
+  .team{position:relative; overflow:hidden; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 18px 16px 22px; transition:transform .15s,box-shadow .15s}
+  .team:hover{transform:translateY(-2px); box-shadow:0 12px 34px rgba(20,20,50,.10)}
+  .team::before{content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--tc)}
+  .team .glyph{position:absolute; right:10px; top:-10px; font-size:92px; font-weight:900; line-height:1; color:var(--tc); opacity:.10; letter-spacing:-.04em; pointer-events:none; user-select:none}
+  .team .head{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+  .team .name{font-size:16px; font-weight:900}
+  .team .cm{font-size:12px; color:#fff; background:var(--tc); padding:2px 9px; border-radius:999px; font-weight:700}
+  .team .count{margin-left:auto; font-size:12px; color:var(--faint); font-weight:700}
+  .members{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+  .members:empty{display:none}
+  .m{display:inline-flex; align-items:center; gap:4px; background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:4px 10px; font-size:12.5px}
+  .m .note{color:var(--faint); font-size:11px}
+  .chip-del{cursor:pointer; color:var(--danger); font-weight:900; margin-left:3px; font-size:11px}
+  .docs{display:inline-flex; align-items:center; gap:7px; text-decoration:none; font-weight:700; font-size:13px;
+    color:var(--tc); padding:9px 14px; border-radius:var(--radius-sm); border:1px solid var(--tc); background:#fff; transition:background .15s,color .15s}
+  .docs:hover{background:var(--tc); color:#fff}
+  .docs.disabled{color:var(--faint); border-color:var(--line); pointer-events:none; background:var(--soft)}
+
+  .smallbtn{appearance:none; border:0; background:var(--spine); color:#fff; border-radius:8px; padding:7px 11px; font:inherit; font-size:12px; font-weight:700; cursor:pointer}
+  .smallbtn:hover{filter:brightness(1.08)}
+  .mini,.team-edit{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line)}
+  .team-edit{border-top:none; padding-top:4px}
+  .mini input,.team-edit input{width:auto; flex:1; min-width:84px; padding:7px 9px; font-size:12.5px}
+  .mini select{width:auto; padding:7px 9px; font-size:12.5px}
+  .newteam{border-style:dashed; align-items:center}
+
+  .ov{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:8px 0 22px}
+  .ov .c{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 16px 14px; box-shadow:var(--shadow)}
+  .ov .n{font-size:12px; font-weight:900; color:var(--spine); letter-spacing:.08em}
+  .ov .d{font-size:15px; font-weight:800; margin:2px 0}
+  .ov .t{font-size:12px; color:var(--muted); margin-bottom:8px}
+  .ov .mode{font-size:11px; color:var(--spine); background:#EEEDFB; border-radius:8px; padding:5px 8px; margin-bottom:10px; line-height:1.4}
+  .ov ul{margin:0; padding-left:16px} .ov li{font-size:12.5px; margin:2px 0}
+  .week{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden}
+  .week>summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px; padding:16px 18px}
+  .week>summary::-webkit-details-marker{display:none}
+  .week .wtag{font-weight:900; font-size:15px} .week .wdate{color:var(--muted); font-size:13px; font-weight:600}
+  .week .chev{margin-left:auto; color:var(--faint); transition:transform .2s} .week[open] .chev{transform:rotate(90deg)}
+  .week .body{padding:0 18px 18px}
+  .srow{display:grid; grid-template-columns:120px 1fr; gap:10px; padding:9px 0; border-top:1px solid var(--line); align-items:start}
+  .srow .tm{font-weight:700; color:var(--muted); font-size:12.5px} .srow .who2{color:var(--muted); font-size:12.5px; text-align:right}
+  .hw{margin-top:14px; background:var(--warn-bg); border:1px solid var(--warn-line); border-left:4px solid var(--warn-line); border-radius:var(--radius-sm); padding:12px 14px}
+  .hw .ht{font-weight:800; color:var(--warn-ink); margin-bottom:6px; font-size:13px}
+  .hw .hb{font-size:12.5px; color:#5D4E00} .hw .hb div{margin:2px 0}
+  .deadline{display:inline-flex; align-items:center; gap:5px; margin-top:8px; background:var(--danger); color:#fff; font-weight:800; font-size:12.5px; padding:5px 13px; border-radius:999px; box-shadow:0 2px 6px rgba(216,68,59,.28)}
+
+  .fb-layout{display:grid; grid-template-columns:360px 1fr; gap:18px; align-items:start}
+  .composer{position:sticky; top:78px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+  .composer h3{margin:0 0 4px; font-size:15px; font-weight:900}
+  .composer p.hint{margin:0 0 14px; font-size:12px; color:var(--muted)}
+  .field{margin-bottom:11px} .field label{display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:5px}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  select,input,textarea{width:100%; font:inherit; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:9px 11px}
+  select:focus,input:focus,textarea:focus{outline:2px solid var(--spine-2); border-color:transparent}
+  textarea{min-height:96px; resize:vertical}
+  .hp{position:absolute; left:-9999px; width:1px; height:1px; opacity:0}
+  .btn{width:100%; margin-top:4px; border:0; cursor:pointer; font:inherit; font-weight:800; background:var(--spine); color:#fff; padding:12px; border-radius:var(--radius-sm); transition:filter .15s,transform .1s}
+  .btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)} .btn:disabled{opacity:.55; cursor:default}
+  .form-msg{font-size:12px; margin-top:9px; min-height:16px} .form-msg.err{color:var(--danger)} .form-msg.ok{color:var(--ok)}
+
+  .feed-head{display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap}
+  .feed-head .ft{font-weight:900; font-size:15px}
+  .feed-head select{width:auto; padding:7px 28px 7px 10px; font-size:12.5px}
+  .feed-head .spacer{flex:1} .feed-head .cnt{font-size:12px; color:var(--faint); font-weight:700}
+  .refresh{appearance:none; border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 12px; font:inherit; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer}
+  .refresh:hover{background:var(--soft); color:var(--ink)}
+
+  .comment{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:15px 16px; margin-bottom:12px}
+  .comment.fresh{animation:pop .35s ease both}
+  @keyframes pop{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none}}
+  .meta{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:9px}
+  .pill{font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px; background:var(--soft); border:1px solid var(--line); color:var(--muted)}
+  .pill.team{color:#fff; border:0} .pill.week{color:var(--spine); background:#EEEDFB; border-color:#DAD8F6}
+  .meta .writer{font-weight:800; font-size:13px} .meta .right{margin-left:auto; font-size:11.5px; color:var(--faint)}
+  .orig{font-size:14px; margin-bottom:10px; white-space:pre-wrap}
+  .langs{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .lang{background:var(--soft); border:1px solid var(--line); border-radius:var(--radius-sm); padding:9px 11px}
+  .lang .lh{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); font-weight:700; margin-bottom:3px}
+  .lang .lt{font-size:13px; white-space:pre-wrap}
+  .empty{background:var(--card); border:1px dashed var(--line); border-radius:var(--radius); padding:34px 20px; text-align:center; color:var(--muted)}
+  .empty .big{font-size:15px; font-weight:800; color:var(--ink); margin-bottom:4px}
+  .center-load{padding:60px 0; text-align:center; color:var(--muted); font-weight:600}
+
+  .modal-bg{position:fixed; inset:0; background:rgba(20,20,40,.45); display:flex; align-items:center; justify-content:center; z-index:50; padding:18px}
+  .modal{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; width:360px; max-width:100%}
+  .modal h3{margin:0 0 14px; font-size:16px; font-weight:900}
+  .modal .actions{display:flex; gap:8px; margin-top:6px}
+
+  @media (max-width:880px){.chips{grid-template-columns:repeat(2,1fr)} .grid{grid-template-columns:1fr} .ov{grid-template-columns:1fr 1fr} .fb-layout{grid-template-columns:1fr} .composer{position:static}}
+  @media (max-width:560px){.ov{grid-template-columns:1fr} .srow{grid-template-columns:88px 1fr} .srow .who2{grid-column:1/-1; text-align:left; color:var(--faint)} .langs{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brand"><h1>라이터스룸</h1><span class="sub" id="brandSub"></span></div>
+    <div class="who">
+      <button class="adminbtn" id="adminBtn" style="display:none"></button>
+      <button class="langbtn" id="langBtn">日本語</button>
+      <span class="badge" id="statusBadge"></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="setupBanner"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-view="dash"></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="program"></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="feedback"></button>
+  </div>
+  <div id="root"><div class="center-load"></div></div>
+</div>
+
+<div class="modal-bg" id="loginModal" style="display:none">
+  <div class="modal">
+    <h3 id="lg_title"></h3>
+    <div class="field"><label id="lg_email_l"></label><input id="lg_email" type="email" autocomplete="username"></div>
+    <div class="field"><label id="lg_pw_l"></label><input id="lg_pw" type="password" autocomplete="current-password"></div>
+    <div class="form-msg err" id="lg_msg"></div>
+    <div class="actions"><button class="btn" id="lg_do" style="flex:1"></button><button class="refresh" id="lg_cancel"></button></div>
+  </div>
+</div>
+
+<!-- ════════════════════ 설정 (여기만 편집) ════════════════════ -->
+<script>
+const SUPABASE_URL      = 'https://djfycutyoifrandrzrnu.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';   // ← anon public 키
+const MYMEMORY_EMAIL    = '';
+
+const TEAM_COLORS = {A:'#3B6FE0',B:'#1A9D6A',C:'#E0A100',D:'#D8443B',E:'#8E44AD',F:'#E8651B',JP:'#0E9FB5'};
+const FOLDER_URL  = '';
+
+/* DB(teams 테이블)가 비어 있을 때만 쓰이는 폴백 명부 */
+const ROSTER = [
+  { team:'A',  cm:'Liv',    docsUrl:'', members:[] },
+  { team:'B',  cm:'Sen',    docsUrl:'', members:[] },
+  { team:'C',  cm:'Jordan', docsUrl:'', members:[] },
+  { team:'D',  cm:'Emika',  docsUrl:'', members:[] },
+  { team:'E',  cm:'Rowan',  docsUrl:'', members:[] },
+  { team:'F',  cm:'Amber',  docsUrl:'', members:[] },
+  { team:'JP', cm:'Lily',   docsUrl:'', members:[] }
+];
+
+const PROGRAM = {
+  ko:{
+    period:'7/6 ~ 7/27 · 매주 일요일 15:00–17:00',
+    finalNote:'최종 원고 제출 8/9 EOD → 8/21(금) 내부검토 후 계약여부 안내',
+    overview:[
+      {no:'1',date:'7/6 (일)', time:'15:00–17:00',mode:'한국 offline · 일본 online · ★통역사 참석★',detail:['인사','워크샵 취지 및 숏폼시장·비글루 소개','비밀유지계약서 작성 / 팀 짜기','[다음주 숙제] 아이템 정하기']},
+      {no:'2',date:'7/13 (일)',time:'15:00–17:00',mode:'한국 offline · 일본 online · ★통역사 참석★',detail:['한지원 작가 강연 (1기 라이터스룸 졸업작가)','아이템 발표 / 피드백','[다음주 숙제] 무료회차 대본(1–10화)']},
+      {no:'3',date:'7/20 (일)',time:'15:00–17:00',mode:'한국·일본 online',detail:['인기작 광고소재 소개','팀별 대본 피드백 및 디벨롭 / Liv 피드백','[다음주 숙제] 1–15화 대본']},
+      {no:'4',date:'7/27 (일)',time:'15:00–17:00',mode:'한국 offline · 일본 online',detail:['15화까지 피드백 (1:1)','현장 Q&A / 수료증 수여','단체사진 촬영']}
+    ],
+    weeks:[
+      {tag:'1주차',date:'7/6', rows:[['15:00–16:00','인사 / 워크샵 취지 및 숏폼시장·비글루 소개','—'],['16:00–16:15','쉬는 시간 / 비밀유지계약서 작성 (한국작가 대상)','—'],['16:15–16:20','팀 발표','—'],['16:20–16:25','[숙제내용 소개] 아이템 정하기 — AI 대본 / AI 드라마 아이템 / 히트작 장르별 추천(현대로맨스·로판·BL·남성향·애니메이션)','—'],['16:30–17:00','2주차 소개 및 마무리 / 담당 PD 컨택포인트 공유 / CM별 진행','—']],
+        hwTitle:'★ 2주차 숙제 : 아이템 정하기', hwBody:['1. 아이템 — 로그라인 + 줄거리 A4 (기·승·전·결 포함) + 캐릭터 설명','2. 장르 — 로맨스 / 로판 / 판타지 / BL / 애니메이션 / 남성향 중 택 1','제출기한 : 7/12(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
+      {tag:'2주차',date:'7/13',rows:[['15:00–16:00','한지원 작가 강연','—'],['16:00–16:10','쉬는 시간','—'],['16:10–16:50','작가 아이템 발표 / 피드백','—'],['16:50–17:00','3주차 과제 발표 / 마무리 (*비글루 내 평가 체크리스트 공유)','—']],
+        hwTitle:'★ 3주차 숙제 : 무료회차(1–10) 대본', hwBody:['· 클리프행어 필수','· 히트작 대본 무료회차분 (*선정)','제출기한 : 7/19(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
+      {tag:'3주차',date:'7/20',rows:[['15:00–15:45','인기작 광고소재 소개','—'],['15:45–16:00','쉬는 시간','—'],['16:00–17:00','팀별 피드백 (1명당 약 2분)','—']],
+        hwTitle:'★ 4주차 숙제 : 피드백 반영 1–15화 대본', hwBody:['피드백을 반영한 1화~15화 대본 작성','제출기한 : 7/26(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
+      {tag:'4주차',date:'7/27',rows:[['15:00–15:20','수료증 수여','—'],['15:20–15:40','현장 Q&A','—'],['15:50–17:00','15화까지 피드백 (1:1)','—'],['17:00–','단체사진 촬영','—']],
+        hwTitle:'★ 향후 : 최종 원고 제출 & 계약', hwBody:['최종 원고 제출 : 8/9 EOD','제출형식 : 최종원고는 DOCS 및 PDF로 받아 지정 폴더에 보관','→ 각 PD가 8/21(금)까지 내부검토 후 최종 계약여부 안내 예정'],
+        hwLinks:[{label:'최종대본 제출 폴더 열기', url:'https://drive.google.com/drive/folders/1y9Lqi_MRpo2qBNJ808YnBCBgWqLfqH21?usp=sharing'}]}
+    ]
+  },
+  ja:{
+    period:'7/6 ~ 7/27 · 毎週日曜 15:00–17:00',
+    finalNote:'最終原稿提出 8/9 EOD → 8/21(金) 内部レビュー後に契約可否を案内',
+    overview:[
+      {no:'1',date:'7/6 (日)', time:'15:00–17:00',mode:'韓国 offline · 日本 online · ★通訳同席★',detail:['挨拶','ワークショップ趣旨・ショートフォーム市場/ビグル紹介','秘密保持契約 / チーム編成','[来週の宿題] アイテム決め']},
+      {no:'2',date:'7/13 (日)',time:'15:00–17:00',mode:'韓国 offline · 日本 online · ★通訳同席★',detail:['ハン・ジウォン作家 講演(1期ライターズルーム卒業作家)','アイテム発表 / フィードバック','[来週の宿題] 無料話 台本(1–10話)']},
+      {no:'3',date:'7/20 (日)',time:'15:00–17:00',mode:'韓国・日本 online',detail:['人気作の広告素材 紹介','チーム別 台本フィードバック / Liv フィードバック','[来週の宿題] 1–15話 台本']},
+      {no:'4',date:'7/27 (日)',time:'15:00–17:00',mode:'韓国 offline · 日本 online',detail:['15話までフィードバック(1:1)','現場Q&A / 修了証授与','集合写真撮影']}
+    ],
+    weeks:[
+      {tag:'1週目',date:'7/6', rows:[['15:00–16:00','挨拶 / ワークショップ趣旨・ショートフォーム市場・ビグル紹介','—'],['16:00–16:15','休憩 / 秘密保持契約(韓国作家対象)','—'],['16:15–16:20','チーム発表','—'],['16:20–16:25','[宿題内容の紹介] アイテム決め — AI台本 / AIドラマのアイテム / ヒット作ジャンル別おすすめ(現代ロマンス・ロマンスファンタジー・BL・男性向・アニメ)','—'],['16:30–17:00','2週目案内・まとめ / 担当PDコンタクト共有 / CM別進行','—']],
+        hwTitle:'★ 2週目 宿題 : アイテム決め', hwBody:['1. アイテム — ログライン + あらすじ A4 (起承転結を含む) + キャラ説明','2. ジャンル — ロマンス / ロマンスファンタジー / ファンタジー / BL / アニメ / 男性向 から1つ','提出期限 : 7/12(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
+      {tag:'2週目',date:'7/13',rows:[['15:00–16:00','ハン・ジウォン作家 講演','—'],['16:00–16:10','休憩','—'],['16:10–16:50','作家 アイテム発表 / フィードバック','—'],['16:50–17:00','3週目課題 発表 / まとめ (*ビグル内 評価チェックリスト共有)','—']],
+        hwTitle:'★ 3週目 宿題 : 無料話(1–10) 台本', hwBody:['· クリフハンガー必須','· ヒット作 台本の無料話分 (*選定)','提出期限 : 7/19(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
+      {tag:'3週目',date:'7/20',rows:[['15:00–15:45','人気作の広告素材 紹介','—'],['15:45–16:00','休憩','—'],['16:00–17:00','チーム別フィードバック(1人 約2分)','—']],
+        hwTitle:'★ 4週目 宿題 : 反映版 1–15話 台本', hwBody:['フィードバックを反映した1–15話の台本','提出期限 : 7/26(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
+      {tag:'4週目',date:'7/27',rows:[['15:00–15:20','修了証 授与','—'],['15:20–15:40','現場Q&A','—'],['15:50–17:00','15話までフィードバック(1:1)','—'],['17:00–','集合写真撮影','—']],
+        hwTitle:'★ 今後 : 最終原稿提出 & 契約', hwBody:['最終原稿提出 : 8/9 EOD','提出形式 : 最終原稿はDOCS及びPDFで受領し指定フォルダに保管','→ 各PDが 8/21(金)までに内部レビュー後 最終契約可否を案内予定'],
+        hwLinks:[{label:'最終台本 提出フォルダを開く', url:'https://drive.google.com/drive/folders/1y9Lqi_MRpo2qBNJ808YnBCBgWqLfqH21?usp=sharing'}]}
+    ]
+  }
+};
+
+const WEEK_VALS = ['1주차','2주차','3주차','4주차'];
+const WEEK_JA   = {'1주차':'1週目','2주차':'2週目','3주차':'3週目','4주차':'4週目'};
+const T = {
+  ko:{
+    brandSub:'공개 대시보드 · 누구나 코멘트 가능', langBtn:'日本語',
+    adminLogin:'🔒 관리자', adminLogout:'로그아웃', editFlag:'편집 모드',
+    loginTitle:'관리자 로그인', loginEmail:'이메일', loginPw:'비밀번호', loginDo:'로그인', loginCancel:'취소',
+    loginFail:'로그인 실패. 이메일/비밀번호를 확인해 주세요.',
+    stConnecting:'연결 중…', stConnected:'연결됨', stUnset:'미설정',
+    tabDash:'📊 대시보드', tabProgram:'📅 프로그램', tabFeedback:'💬 코멘트', loading:'불러오는 중…',
+    setupTitle:'⚙️ 설정이 완료되지 않았습니다',
+    setupBody:'이 페이지 하단 &lt;script&gt; 안의 <code>SUPABASE_ANON_KEY</code> 를 본인 Supabase 의 anon public 키로 바꾸면 코멘트·편집 기능이 켜집니다.',
+    ebRoster:'팀 명부', ebProgram:'4주 프로그램', ebFeedback:'공개 피드백',
+    cWriters:'작가', cTeams:'팀', cKR:'🇰🇷 한국', cJP:'🇯🇵 일본', uPeople:'명', uTeams:'팀',
+    folderOpen:'📁 제출 DOCS 폴더 열기 ↗',
+    rosterEmptyTitle:'아직 등록된 작가가 없습니다',
+    rosterEmptyBody:'관리자로 로그인하면 이 화면에서 작가·DOCS 링크를 추가할 수 있습니다.',
+    docsUnset:'DOCS 링크 미설정', docsOpen:'열기 ↗',
+    phMemberName:'작가명', phMemberNote:'비고', addBtn:'＋ 추가', saveBtn:'저장',
+    cmLabel:'CM', docsLabel:'DOCS URL', delConfirm:'삭제할까요?',
+    newTeamKey:'팀키(예: G)', addTeamBtn:'＋ 새 팀',
+    pgRound:'회차', pgNotice:'📌 안내',
+    cpTitle:'코멘트 남기기', cpHint:'한국어·일본어 어느 쪽으로 써도 양쪽 번역이 함께 저장됩니다.',
+    lWeek:'주차', lTeam:'팀', lWriter:'작가', lName:'이름 (선택)', lRole:'작성자 구분', lComment:'코멘트',
+    phWriter:'작가명', phName:'비워두면 익명으로 등록', phComment:'제출물에 대한 피드백을…', btnSubmit:'등록',
+    msgReq:'주차·작가·코멘트를 입력해 주세요.', msgSaving:'번역해서 저장 중…', msgSaved:'등록되었습니다 ✓', msgFail:'처리에 실패했습니다. 설정·네트워크를 확인해 주세요.',
+    cpUnsetTitle:'코멘트 기능 미설정', cpUnsetBody:'Supabase 키를 설정하면 활성화됩니다.',
+    feedTitle:'코멘트', weekAll:'주차 전체', teamAll:'팀 전체', refresh:'↻ 새로고침', uCount:'건',
+    feedEmptyTitle:'아직 코멘트가 없습니다', feedEmptyBody:'왼쪽에서 첫 코멘트를 남겨보세요.', pick:'선택'
+  },
+  ja:{
+    brandSub:'公開ダッシュボード · 誰でもコメント可', langBtn:'한국어',
+    adminLogin:'🔒 管理者', adminLogout:'ログアウト', editFlag:'編集モード',
+    loginTitle:'管理者ログイン', loginEmail:'メール', loginPw:'パスワード', loginDo:'ログイン', loginCancel:'キャンセル',
+    loginFail:'ログイン失敗。メール/パスワードをご確認ください。',
+    stConnecting:'接続中…', stConnected:'接続済み', stUnset:'未設定',
+    tabDash:'📊 ダッシュボード', tabProgram:'📅 プログラム', tabFeedback:'💬 コメント', loading:'読み込み中…',
+    setupTitle:'⚙️ セットアップが未完了です',
+    setupBody:'このページ下部の &lt;script&gt; 内 <code>SUPABASE_ANON_KEY</code> を、あなたの Supabase の anon public キーに貼り替えるとコメント・編集機能が有効になります。',
+    ebRoster:'チーム名簿', ebProgram:'4週間プログラム', ebFeedback:'公開フィードバック',
+    cWriters:'作家', cTeams:'チーム', cKR:'🇰🇷 韓国', cJP:'🇯🇵 日本', uPeople:'名', uTeams:'チーム',
+    folderOpen:'📁 提出DOCSフォルダを開く ↗',
+    rosterEmptyTitle:'まだ作家が登録されていません',
+    rosterEmptyBody:'管理者でログインすると、この画面から作家・DOCSリンクを追加できます。',
+    docsUnset:'DOCSリンク未設定', docsOpen:'を開く ↗',
+    phMemberName:'作家名', phMemberNote:'備考', addBtn:'＋ 追加', saveBtn:'保存',
+    cmLabel:'CM', docsLabel:'DOCS URL', delConfirm:'削除しますか?',
+    newTeamKey:'チームキー(例: G)', addTeamBtn:'＋ 新規チーム',
+    pgRound:'回', pgNotice:'📌 案内',
+    cpTitle:'コメントを残す', cpHint:'韓国語・日本語どちらで書いても、両方の訳が一緒に保存されます。',
+    lWeek:'週', lTeam:'チーム', lWriter:'作家', lName:'お名前(任意)', lRole:'投稿者の区分', lComment:'コメント',
+    phWriter:'作家名', phName:'空欄で匿名になります', phComment:'提出物へのフィードバックを…', btnSubmit:'投稿する',
+    msgReq:'週・作家・コメントを入力してください。', msgSaving:'翻訳して保存中…', msgSaved:'投稿しました ✓', msgFail:'処理に失敗しました。設定やネットワークをご確認ください。',
+    cpUnsetTitle:'コメント機能は未設定です', cpUnsetBody:'Supabase キーを設定すると有効になります。',
+    feedTitle:'コメント', weekAll:'週 すべて', teamAll:'チーム すべて', refresh:'↻ 更新', uCount:'件',
+    feedEmptyTitle:'まだコメントがありません', feedEmptyBody:'左側から最初のコメントを残してみてください。', pick:'選択'
+  }
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ════════════════════ 앱 본체 ════════════════════ -->
+<script>
+let LANG='ko';
+const STATE = { view:'dash', filterWeek:'', filterTeam:'', comments:[], roster:[], ready:false, status:'connecting', isAdmin:false };
+const CONFIGURED = !/YOUR-PROJECT|YOUR-ANON/.test(SUPABASE_URL + SUPABASE_ANON_KEY);
+let db = null;
+if (CONFIGURED && window.supabase) db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function t(k){ return (T[LANG] && T[LANG][k] != null) ? T[LANG][k] : (T.ko[k]||k); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function attr(s){ return esc(s); }
+function tcolor(tm){ return TEAM_COLORS[tm] || '#5F6368'; }
+function flag(c){ const u=String(c||'').toUpperCase(); return u==='KR'?'🇰🇷':u==='JP'?'🇯🇵':'🏳️'; }
+function weekLabel(v){ return LANG==='ja' ? (WEEK_JA[v]||v) : v; }
+function prog(){ return PROGRAM[LANG] || PROGRAM.ko; }
+function val(id){ const el=document.getElementById(id); return el?el.value:''; }
+
+/* 번역 */
+function detectLang(x){ if(/[\uAC00-\uD7A3]/.test(x)) return 'ko'; if(/[\u3040-\u30FF]/.test(x)) return 'ja'; return 'ko'; }
+async function mm(text, source, target){
+  try{ const u='https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+source+'|'+target+(MYMEMORY_EMAIL?'&de='+encodeURIComponent(MYMEMORY_EMAIL):'');
+    const r=await fetch(u); const j=await r.json(); return (j&&j.responseData&&j.responseData.translatedText)||''; }catch(e){ return ''; }
+}
+async function bilingual(text){ const s=detectLang(text); return s==='ko'?{ko:text,ja:await mm(text,'ko','ja')}:{ja:text,ko:await mm(text,'ja','ko')}; }
+
+/* ── 정적 요소 이벤트 (1회) ── */
+document.getElementById('langBtn').addEventListener('click', ()=> setLang(LANG==='ko'?'ja':'ko'));
+document.querySelectorAll('.tab').forEach(b=> b.addEventListener('click', ()=> switchView(b.dataset.view)));
+document.getElementById('adminBtn').addEventListener('click', ()=> STATE.isAdmin ? doLogout() : openModal());
+document.getElementById('lg_do').addEventListener('click', doLogin);
+document.getElementById('lg_cancel').addEventListener('click', closeModal);
+document.getElementById('loginModal').addEventListener('click', e=>{ if(e.target.id==='loginModal') closeModal(); });
+
+function setLang(l){ LANG=l; document.documentElement.lang=l; applyChrome(); render(); }
+function switchView(v){ STATE.view=v; document.querySelectorAll('.tab').forEach(b=> b.setAttribute('aria-selected', b.dataset.view===v?'true':'false')); render(); }
+
+function applyChrome(){
+  document.getElementById('brandSub').textContent=t('brandSub');
+  document.getElementById('langBtn').textContent=t('langBtn');
+  const tabs=document.querySelectorAll('.tab');
+  tabs[0].textContent=t('tabDash'); tabs[1].textContent=t('tabProgram'); tabs[2].textContent=t('tabFeedback');
+  const ab=document.getElementById('adminBtn');
+  if(!CONFIGURED){ ab.style.display='none'; } else { ab.style.display=''; ab.textContent = STATE.isAdmin? t('adminLogout') : t('adminLogin'); }
+  const badge=document.getElementById('statusBadge');
+  if(STATE.status==='connected'){ badge.textContent=t('stConnected'); badge.className='badge live'; }
+  else if(STATE.status==='unset'){ badge.textContent=t('stUnset'); badge.className='badge'; }
+  else { badge.textContent=t('stConnecting'); badge.className='badge'; }
+  document.getElementById('setupBanner').innerHTML = (STATE.status==='unset') ? '<div class="setup"><b>'+t('setupTitle')+'</b>'+t('setupBody')+'</div>' : '';
+  // 모달 라벨
+  document.getElementById('lg_title').textContent=t('loginTitle');
+  document.getElementById('lg_email_l').textContent=t('loginEmail');
+  document.getElementById('lg_pw_l').textContent=t('loginPw');
+  document.getElementById('lg_do').textContent=t('loginDo');
+  document.getElementById('lg_cancel').textContent=t('loginCancel');
+}
+
+/* ── 인증 ── */
+async function checkSession(){ try{ const {data}=await db.auth.getSession(); STATE.isAdmin=!!(data&&data.session); }catch(e){ STATE.isAdmin=false; } }
+function openModal(){ const m=document.getElementById('loginModal'); document.getElementById('lg_msg').textContent=''; m.style.display='flex'; const e=document.getElementById('lg_email'); if(e) e.focus(); }
+function closeModal(){ document.getElementById('loginModal').style.display='none'; }
+async function doLogin(){
+  const email=val('lg_email'), password=val('lg_pw'); const msg=document.getElementById('lg_msg');
+  msg.textContent='';
+  try{
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    STATE.isAdmin=true; closeModal(); await loadRoster(); applyChrome(); render();
+  }catch(e){ msg.textContent=t('loginFail'); }
+}
+async function doLogout(){ try{ await db.auth.signOut(); }catch(e){} STATE.isAdmin=false; await loadRoster(); applyChrome(); render(); }
+
+/* ── 기동 ── */
+async function boot(){
+  STATE.status = CONFIGURED ? 'connected' : 'unset';
+  if(CONFIGURED){ await checkSession(); await Promise.all([loadRoster(), loadComments()]); }
+  else { STATE.roster = ROSTER.slice(); }
+  applyChrome(); STATE.ready=true; render();
+}
+async function loadRoster(){
+  if(!db){ STATE.roster = ROSTER.slice(); return; }
+  try{
+    const tr = await db.from('teams').select('*').order('sort',{ascending:true});
+    const mr = await db.from('members').select('*').order('sort',{ascending:true});
+    if(tr.error||mr.error) throw (tr.error||mr.error);
+    const teams=tr.data||[], members=mr.data||[];
+    if(!teams.length){ STATE.roster = ROSTER.slice(); return; }
+    STATE.roster = teams.map(tt=>({ team:tt.team, cm:tt.cm||'', docsUrl:tt.docs_url||'',
+      members: members.filter(m=>m.team===tt.team).map(m=>({ id:m.id, name:m.name, country:m.country||'KR', note:m.note||'' })) }));
+  }catch(e){ STATE.roster = ROSTER.slice(); }
+}
+async function loadComments(){
+  if(!db) return;
+  try{
+    const { data, error } = await db.from('comments').select('*').order('created_at',{ascending:false}).limit(300);
+    if(error) throw error;
+    STATE.comments=(data||[]).map(r=>({ week:r.week||'', team:r.team||'', writer:r.writer||'', author:r.author||'',
+      original:r.original||'', ko:r.ko||'', ja:r.ja||'', date:(r.created_at||'').slice(0,10) }));
+  }catch(e){ STATE.comments=[]; }
+}
+
+/* ── 렌더 ── */
+function render(){
+  const root=document.getElementById('root');
+  if(!STATE.ready){ root.innerHTML='<div class="center-load">'+t('loading')+'</div>'; return; }
+  if(STATE.view==='dash') root.innerHTML=viewDash();
+  else if(STATE.view==='program') root.innerHTML=viewProgram();
+  else root.innerHTML=viewFeedback();
+  wire();
+}
+
+function viewDash(){
+  const all=STATE.roster, allMembers=all.reduce((a,x)=>a.concat(x.members||[]),[]);
+  const kr=allMembers.filter(m=>String(m.country).toUpperCase()==='KR').length;
+  const jp=allMembers.filter(m=>String(m.country).toUpperCase()==='JP').length;
+  const shown = STATE.isAdmin ? all : all.filter(x=>x.members&&x.members.length);
+  const editFlag = STATE.isAdmin ? '<span class="editflag">'+esc(t('editFlag'))+'</span>' : '';
+  const chips=chip(t('cWriters'),allMembers.length+t('uPeople'))+chip(t('cTeams'),(all.length)+t('uTeams'))+chip(t('cKR'),kr+t('uPeople'))+chip(t('cJP'),jp+t('uPeople'));
+  const folder=FOLDER_URL?'<a class="docs" style="--tc:#2D2A6E;margin-bottom:16px" href="'+attr(FOLDER_URL)+'" target="_blank" rel="noopener">'+esc(t('folderOpen'))+'</a>':'';
+
+  let body;
+  if(!shown.length){
+    body='<div class="empty"><div class="big">'+esc(t('rosterEmptyTitle'))+'</div><div>'+esc(t('rosterEmptyBody'))+'</div></div>';
+  } else {
+    body='<div class="grid">'+shown.map(teamCard).join('')+(STATE.isAdmin?newTeamCard():'')+'</div>';
+  }
+  return '<div class="view"><div class="eyebrow">'+esc(t('ebRoster'))+editFlag+'</div><div class="chips">'+chips+'</div>'+folder+body+'</div>';
+}
+function chip(k,v){ return '<div class="chip"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>'; }
+
+function teamCard(x){
+  const col=tcolor(x.team);
+  const members=(x.members||[]).map(m=>{
+    const del = (STATE.isAdmin && m.id) ? ' <span class="chip-del" data-id="'+attr(m.id)+'" title="'+attr(t('delConfirm'))+'">✕</span>' : '';
+    return '<span class="m">'+flag(m.country)+' '+esc(m.name)+(m.note?' <span class="note">'+esc(m.note)+'</span>':'')+del+'</span>';
+  }).join('');
+  const docs = x.docsUrl
+    ? '<a class="docs" style="--tc:'+col+'" href="'+attr(x.docsUrl)+'" target="_blank" rel="noopener">📄 TEAM_'+esc(x.team)+' '+esc(t('docsOpen'))+'</a>'
+    : '<span class="docs disabled">'+esc(t('docsUnset'))+'</span>';
+  let admin='';
+  if(STATE.isAdmin){
+    admin =
+      '<div class="team-edit" data-team="'+attr(x.team)+'">'+
+        '<input class="te-cm" value="'+attr(x.cm||'')+'" placeholder="'+attr(t('cmLabel'))+'">'+
+        '<input class="te-docs" value="'+attr(x.docsUrl||'')+'" placeholder="'+attr(t('docsLabel'))+'">'+
+        '<button class="smallbtn te-save" type="button">'+esc(t('saveBtn'))+'</button>'+
+      '</div>'+
+      '<div class="mini" data-team="'+attr(x.team)+'">'+
+        '<input class="am-name" placeholder="'+attr(t('phMemberName'))+'">'+
+        '<select class="am-country"><option value="KR">🇰🇷 KR</option><option value="JP">🇯🇵 JP</option></select>'+
+        '<input class="am-note" placeholder="'+attr(t('phMemberNote'))+'">'+
+        '<button class="smallbtn am-add" type="button">'+esc(t('addBtn'))+'</button>'+
+      '</div>';
+  }
+  return '<div class="team" style="--tc:'+col+'"><div class="glyph">'+esc(x.team)+'</div>'+
+    '<div class="head"><span class="name">TEAM '+esc(x.team)+'</span><span class="cm">CM · '+esc(x.cm||'-')+'</span><span class="count">'+(x.members||[]).length+t('uPeople')+'</span></div>'+
+    '<div class="members">'+members+'</div>'+docs+admin+'</div>';
+}
+function newTeamCard(){
+  return '<div class="team newteam" style="--tc:#9A9AB0">'+
+    '<div class="mini" style="border-top:none;padding-top:0;margin-top:0">'+
+      '<input id="nt-key" placeholder="'+attr(t('newTeamKey'))+'" style="max-width:120px">'+
+      '<input id="nt-cm" placeholder="'+attr(t('cmLabel'))+'">'+
+      '<button class="smallbtn" id="nt-add" type="button">'+esc(t('addTeamBtn'))+'</button>'+
+    '</div></div>';
+}
+
+function viewProgram(){
+  const p=prog();
+  const ov=p.overview.map(o=>'<div class="c"><div class="n">'+esc(t('pgRound'))+' '+esc(o.no)+'</div><div class="d">'+esc(o.date)+'</div><div class="t">'+esc(o.time)+'</div><div class="mode">'+esc(o.mode)+'</div><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul></div>').join('');
+  const weeks=p.weeks.map((w,i)=>{
+    const rows=w.rows.map(r=>'<div class="srow"><div class="tm">'+esc(r[0])+'</div><div>'+esc(r[1])+'</div></div>').join('');
+    const hb=w.hwBody.map(x=> /^(제출기한|提出期限)/.test(x) ? '<div><span class="deadline">⏰ '+esc(x)+'</span></div>' : '<div>'+esc(x)+'</div>').join('');
+    const hl=(w.hwLinks||[]).map(l=>'<a href="'+attr(l.url)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:9px;margin-right:10px;font-weight:800;color:#7A5C00;text-decoration:underline">📁 '+esc(l.label)+' ↗</a>').join('');
+    return '<details class="week"'+(i===0?' open':'')+'><summary><span class="wtag">'+esc(w.tag)+'</span><span class="wdate">'+esc(w.date)+'</span><span class="chev">▶</span></summary>'+
+      '<div class="body">'+rows+'<div class="hw"><div class="ht">'+esc(w.hwTitle)+'</div><div class="hb">'+hb+'</div>'+hl+'</div></div></details>';
+  }).join('');
+  return '<div class="view"><div class="eyebrow">'+esc(t('ebProgram'))+' · '+esc(p.period)+'</div><div class="ov">'+ov+'</div>'+weeks+
+    '<div class="hw" style="margin-top:6px"><div class="ht">'+esc(t('pgNotice'))+'</div><div class="hb"><div>'+esc(p.finalNote)+'</div></div></div></div>';
+}
+
+function viewFeedback(){
+  const teamOpts=STATE.roster.map(x=>x.team);
+  const writerOpts=STATE.roster.reduce((a,x)=>a.concat((x.members||[]).map(m=>m.name)),[]);
+  const wsel=writerOpts.length?selVals('f_writer',writerOpts,writerOpts.map(esc),''):'<input id="f_writer" placeholder="'+attr(t('phWriter'))+'">';
+  const composer=!CONFIGURED
+    ? '<div class="empty"><div class="big">'+esc(t('cpUnsetTitle'))+'</div><div>'+esc(t('cpUnsetBody'))+'</div></div>'
+    : '<div class="composer"><h3>'+esc(t('cpTitle'))+'</h3><p class="hint">'+esc(t('cpHint'))+'</p>'+
+      '<div class="field"><label>'+esc(t('lWriter'))+'</label>'+wsel+'</div>'+
+      '<div class="row2"><div class="field"><label>'+esc(t('lWeek'))+'</label>'+selWeeks('f_week',STATE.filterWeek||'')+'</div>'+
+      '<div class="field"><label>'+esc(t('lRole'))+'</label>'+roleSel('f_role')+'</div></div>'+
+      '<div class="field"><label>'+esc(t('lComment'))+'</label><textarea id="f_original" maxlength="1000" placeholder="'+attr(t('phComment'))+'"></textarea></div>'+
+      '<input class="hp" id="f_hp" tabindex="-1" autocomplete="off" placeholder="Leave empty">'+
+      '<button class="btn" id="f_submit">'+esc(t('btnSubmit'))+'</button><div class="form-msg" id="f_msg"></div></div>';
+  return '<div class="view"><div class="eyebrow">'+esc(t('ebFeedback'))+'</div><div class="fb-layout"><div>'+composer+'</div>'+
+    '<div><div class="feed-head"><span class="ft">'+esc(t('feedTitle'))+'</span>'+
+      selWeeks('flt_week',STATE.filterWeek,t('weekAll'))+selVals('flt_team',teamOpts,teamOpts.map(esc),STATE.filterTeam,t('teamAll'))+
+      '<span class="spacer"></span><button class="refresh" id="btnRefresh">'+esc(t('refresh'))+'</button><span class="cnt" id="feedCount"></span></div>'+
+      '<div id="feed"></div></div></div></div>';
+}
+function selVals(id,vals,labels,cur,ph){
+  let o = ph!=null ? '<option value="">'+esc(ph)+'</option>' : '<option value="">'+esc(t('pick'))+'</option>';
+  o += vals.map((v,i)=>'<option value="'+attr(v)+'"'+(v===cur?' selected':'')+'>'+labels[i]+'</option>').join('');
+  return '<select id="'+id+'">'+o+'</select>';
+}
+function selWeeks(id,cur,ph){ return selVals(id, WEEK_VALS, WEEK_VALS.map(v=>esc(weekLabel(v))), cur, ph); }
+function roleLabel(v){ if(v==='writer') return LANG==='ja'?'作家':'작가'; if(v==='pd') return 'PD'; return v||''; }
+function roleIcon(v){ return v==='pd'?'🎬':(v==='writer'?'✍️':''); }
+function roleBadge(v){ const ic=roleIcon(v), lbl=roleLabel(v); return esc((ic?ic+' ':'')+lbl); }
+function roleSel(id){ return '<select id="'+id+'"><option value="writer">'+esc(roleLabel('writer'))+'</option><option value="pd">'+esc(roleLabel('pd'))+'</option></select>'; }
+function writerTeam(name){ for(const x of STATE.roster){ if((x.members||[]).some(m=>m.name===name)) return x.team; } return ''; }
+
+function renderFeed(){
+  const list=STATE.comments.filter(c=>(!STATE.filterWeek||c.week===STATE.filterWeek)&&(!STATE.filterTeam||c.team===STATE.filterTeam));
+  const feed=document.getElementById('feed'), cnt=document.getElementById('feedCount');
+  if(cnt) cnt.textContent=list.length+t('uCount');
+  if(!feed) return;
+  if(!list.length){ feed.innerHTML='<div class="empty"><div class="big">'+esc(t('feedEmptyTitle'))+'</div><div>'+esc(t('feedEmptyBody'))+'</div></div>'; return; }
+  feed.innerHTML=list.map(c=>commentHTML(c,false)).join('');
+}
+function commentHTML(c,fresh){
+  const col=tcolor(c.team);
+  const teamPill=c.team?'<span class="pill team" style="background:'+col+'">'+esc(c.team)+'</span>':'';
+  return '<div class="comment'+(fresh?' fresh':'')+'"><div class="meta">'+
+    (c.week?'<span class="pill week">'+esc(weekLabel(c.week))+'</span>':'')+teamPill+
+    '<span class="writer">'+esc(c.writer)+'</span>'+
+    '<span class="right">'+roleBadge(c.author)+(c.date?' · '+esc(c.date):'')+'</span></div>'+
+    '<div class="orig">'+esc(c.original)+'</div>'+
+    '<div class="langs"><div class="lang"><div class="lh">🇰🇷 한국어</div><div class="lt">'+esc(c.ko||'—')+'</div></div>'+
+    '<div class="lang"><div class="lh">🇯🇵 日本語</div><div class="lt">'+esc(c.ja||'—')+'</div></div></div></div>';
+}
+
+/* ── 이벤트 바인딩 ── */
+function wire(){
+  if(STATE.view==='dash' && STATE.isAdmin) wireAdmin();
+  if(STATE.view==='feedback') wireFeedback();
+}
+function wireAdmin(){
+  document.querySelectorAll('.chip-del').forEach(el=> el.addEventListener('click', ()=> delMember(el.getAttribute('data-id'))));
+  document.querySelectorAll('.am-add').forEach(el=> el.addEventListener('click', ()=>{
+    const box=el.closest('.mini');
+    addMember(box.getAttribute('data-team'), box.querySelector('.am-name').value, box.querySelector('.am-country').value, box.querySelector('.am-note').value);
+  }));
+  document.querySelectorAll('.te-save').forEach(el=> el.addEventListener('click', ()=>{
+    const box=el.closest('.team-edit');
+    saveTeam(box.getAttribute('data-team'), box.querySelector('.te-cm').value, box.querySelector('.te-docs').value);
+  }));
+  const nt=document.getElementById('nt-add'); if(nt) nt.addEventListener('click', addTeam);
+}
+function wireFeedback(){
+  renderFeed();
+  bind('flt_week','change',e=>{STATE.filterWeek=e.target.value; renderFeed();});
+  bind('flt_team','change',e=>{STATE.filterTeam=e.target.value; renderFeed();});
+  bind('btnRefresh','click',async()=>{ await loadComments(); renderFeed(); });
+  const btn=document.getElementById('f_submit'); if(btn) btn.addEventListener('click', submitComment);
+}
+function bind(id,ev,fn){ const el=document.getElementById(id); if(el) el.addEventListener(ev,fn); }
+
+/* ── 관리자 CRUD ── */
+async function addMember(team,name,country,note){
+  name=(name||'').trim(); if(!name) return;
+  try{ const {error}=await db.from('members').insert({team:team,name:name,country:country||'KR',note:(note||'').trim()}); if(error) throw error; await loadRoster(); render(); }
+  catch(e){ alert(t('msgFail')); }
+}
+async function delMember(id){
+  if(!id) return; if(!window.confirm(t('delConfirm'))) return;
+  try{ const {error}=await db.from('members').delete().eq('id',id); if(error) throw error; await loadRoster(); render(); }
+  catch(e){ alert(t('msgFail')); }
+}
+async function saveTeam(team,cm,docs){
+  try{ const {error}=await db.from('teams').update({cm:(cm||'').trim(),docs_url:(docs||'').trim()}).eq('team',team); if(error) throw error; await loadRoster(); render(); }
+  catch(e){ alert(t('msgFail')); }
+}
+async function addTeam(){
+  const key=(val('nt-key')||'').trim().toUpperCase(); const cm=(val('nt-cm')||'').trim();
+  if(!key) return;
+  try{ const {error}=await db.from('teams').insert({team:key,cm:cm,sort:99}); if(error) throw error; await loadRoster(); render(); }
+  catch(e){ alert(t('msgFail')); }
+}
+
+/* ── 코멘트 ── */
+async function submitComment(){
+  const msg=document.getElementById('f_msg'), btn=document.getElementById('f_submit');
+  if(val('f_hp')){ return; }
+  const week=val('f_week'), writer=val('f_writer'), role=val('f_role')||'writer', original=val('f_original').trim();
+  const team=writerTeam(writer);
+  if(!week || !writer || !original){ msg.className='form-msg err'; msg.textContent=t('msgReq'); return; }
+  btn.disabled=true; msg.className='form-msg'; msg.textContent=t('msgSaving');
+  try{
+    const tr=await bilingual(original);
+    const row={ week, team, writer, author: role, original, ko:tr.ko, ja:tr.ja };
+    const { error }=await db.from('comments').insert(row);
+    if(error) throw error;
+    STATE.comments.unshift(Object.assign({ date:new Date().toISOString().slice(0,10) }, row));
+    document.getElementById('f_original').value='';
+    msg.className='form-msg ok'; msg.textContent=t('msgSaved');
+    renderFeed();
+    const first=document.querySelector('#feed .comment'); if(first) first.classList.add('fresh');
+    setTimeout(()=>{ if(msg) msg.textContent=''; }, 2500);
+  }catch(e){ msg.className='form-msg err'; msg.textContent=t('msgFail'); }
+  finally{ btn.disabled=false; }
+}
+
+boot();
+</script>
+</body>
+</html>
