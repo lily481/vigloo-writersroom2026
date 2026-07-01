@@ -148,6 +148,14 @@
   .center-load{padding:60px 0; text-align:center; color:var(--muted); font-weight:600}
 
   .modal-bg{position:fixed; inset:0; background:rgba(20,20,40,.45); display:flex; align-items:center; justify-content:center; z-index:50; padding:18px}
+  .gate{position:fixed; inset:0; z-index:100; background:linear-gradient(160deg,#1B1B2F,#2D2A6E); display:flex; align-items:center; justify-content:center; padding:20px}
+  .gate .box{background:#fff; border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.35); padding:30px 26px; width:360px; max-width:100%; text-align:center}
+  .gate .lock{font-size:34px}
+  .gate h2{margin:8px 0 2px; font-size:19px; font-weight:900; letter-spacing:-.01em}
+  .gate p{margin:0 0 18px; font-size:12.5px; color:var(--muted)}
+  .gate input{text-align:center; font-size:16px; letter-spacing:.05em; padding:12px}
+  .gate .btn{margin-top:12px}
+  .gate .gmsg{font-size:12px; color:var(--danger); min-height:16px; margin-top:8px; font-weight:700}
   .modal{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; width:360px; max-width:100%}
   .modal h3{margin:0 0 14px; font-size:16px; font-weight:900}
   .modal .actions{display:flex; gap:8px; margin-top:6px}
@@ -180,6 +188,17 @@
   <div id="root"><div class="center-load"></div></div>
 </div>
 
+<div class="gate" id="gate" style="display:none">
+  <div class="box">
+    <div class="lock">🔒</div>
+    <h2>라이터스룸</h2>
+    <p>비밀번호를 입력해 주세요<br>パスワードを入力してください</p>
+    <input id="gate_pw" type="password" autocomplete="off" placeholder="비밀번호 / パスワード">
+    <button class="btn" id="gate_go">입장 · 入場</button>
+    <div class="gmsg" id="gate_msg"></div>
+  </div>
+</div>
+
 <div class="modal-bg" id="loginModal" style="display:none">
   <div class="modal">
     <h3 id="lg_title"></h3>
@@ -195,6 +214,14 @@
 const SUPABASE_URL      = 'https://djfycutyoifrandrzrnu.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';   // ← anon public 키
 const MYMEMORY_EMAIL    = '';
+
+/* ── 閲覧パスコード（合言葉）─ 空 '' にすると鍵オフ ──
+   既定の合言葉は「vigloo2026」。変更したい場合は下のハッシュを差し替え。
+   （ハッシュの作り方：ブラウザのF12コンソールで
+     crypto.subtle.digest('SHA-256',new TextEncoder().encode('新しい合言葉'))
+       .then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+     と実行 → 出た文字列を GATE_HASH に貼り替え） */
+const GATE_HASH = 'd4bbc65f36a4a567f4aa7493ae4ac5a2c45d5f5aa058ac9d611e3316361aca72';
 
 const TEAM_COLORS = {A:'#3B6FE0',B:'#1A9D6A',C:'#E0A100',D:'#D8443B',E:'#8E44AD',F:'#E8651B',JP:'#0E9FB5'};
 const FOLDER_URL  = '';
@@ -619,7 +646,28 @@ async function submitComment(){
   finally{ btn.disabled=false; }
 }
 
-boot();
+/* ── 閲覧パスコード（合言葉）ゲート ── */
+const GATE_KEY='wr_gate_ok_v1';
+const GATE_ON = !!(GATE_HASH && GATE_HASH.length===64);
+async function sha256hex(s){
+  const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function gateUnlocked(){ try{ return localStorage.getItem(GATE_KEY)==='1'; }catch(e){ return false; } }
+function showGate(){ const g=document.getElementById('gate'); g.style.display='flex'; const i=document.getElementById('gate_pw'); if(i) i.focus(); }
+function hideGate(){ document.getElementById('gate').style.display='none'; }
+async function tryUnlock(){
+  const msg=document.getElementById('gate_msg');
+  const pw=document.getElementById('gate_pw').value;
+  if(!pw){ return; }
+  let h=''; try{ h=await sha256hex(pw); }catch(e){ h=''; }
+  if(h===GATE_HASH){ try{ localStorage.setItem(GATE_KEY,'1'); }catch(e){} hideGate(); boot(); }
+  else { msg.textContent='비밀번호가 올바르지 않습니다 · パスワードが違います'; }
+}
+document.getElementById('gate_go').addEventListener('click', tryUnlock);
+document.getElementById('gate_pw').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+
+if(!GATE_ON || gateUnlocked()){ boot(); } else { showGate(); }
 </script>
 </body>
 </html>
