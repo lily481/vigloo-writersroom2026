@@ -109,7 +109,22 @@
   .srow .tm{font-weight:700; color:var(--muted); font-size:12.5px} .srow .who2{color:var(--muted); font-size:12.5px; text-align:right}
   .hw{margin-top:14px; background:var(--warn-bg); border:1px solid var(--warn-line); border-left:4px solid var(--warn-line); border-radius:var(--radius-sm); padding:12px 14px}
   .hw .ht{font-weight:800; color:var(--warn-ink); margin-bottom:6px; font-size:13px}
-  .hw .hb{font-size:12.5px; color:#5D4E00} .hw .hb div{margin:2px 0}
+  .hw .hb{font-size:12.5px; color:#5D4E00; line-height:1.65} .hw .hb div{margin:5px 0}
+  .hw .hwitem{padding-left:4px}
+  .hw .hwfmt{display:inline-block; margin-top:6px; background:#fff; border:1px solid var(--warn-line); border-radius:8px; padding:5px 11px; font-weight:700; color:var(--warn-ink)}
+  .hw .hwcard{display:flex; gap:10px; align-items:flex-start; background:#fff; border:1px solid var(--warn-line); border-radius:10px; padding:10px 12px; margin:8px 0}
+  .hw .hwnum{flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--spine); color:#fff; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; margin-top:1px}
+  .hw .hwmain{flex:1; min-width:0}
+  .hw .hwlabel{font-weight:800; color:var(--ink); font-size:13px}
+  .hw .hwpick{font-size:10.5px; font-weight:800; color:#fff; background:var(--danger); border-radius:999px; padding:1px 8px; margin-left:6px; vertical-align:middle}
+  .hw .hwdesc{font-size:12.5px; color:#6B5A1E; margin-top:3px}
+  .hw .hwchips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+  .hw .gchip{font-size:12px; font-weight:700; background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:4px 11px; color:var(--ink)}
+  .hw .hwspecs{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+  .hw .ndate{display:inline-block; background:var(--danger); color:#fff; font-weight:800; border-radius:6px; padding:1px 8px; margin:0 1px; white-space:nowrap}
+  .hw .spec{display:inline-flex; align-items:center; gap:7px; background:#EEEDFB; border:1px solid #DAD8F6; border-radius:10px; padding:5px 11px}
+  .hw .spec .sk{font-size:10.5px; font-weight:700; color:var(--muted)}
+  .hw .spec .sv{font-size:13px; font-weight:800; color:var(--spine)}
   .deadline{display:inline-flex; align-items:center; gap:5px; margin-top:8px; background:var(--danger); color:#fff; font-weight:800; font-size:12.5px; padding:5px 13px; border-radius:999px; box-shadow:0 2px 6px rgba(216,68,59,.28)}
 
   .fb-layout{display:grid; grid-template-columns:360px 1fr; gap:18px; align-items:start}
@@ -242,7 +257,7 @@ const ROSTER = [
 const PROGRAM = {
   ko:{
     period:'7/6 ~ 7/27 · 매주 일요일 15:00–17:00',
-    finalNote:'최종 원고 제출 8/9 EOD → 8/21(금) 내부검토 후 계약여부 안내',
+    finalNote:['최종 원고 제출 8/9 EOD','★ 8/21(금) 내부검토 후 계약여부 안내'],
     overview:[
       {no:'1',date:'7/6 (일)', time:'15:00–17:00',mode:'한국 offline · 일본 online · ★통역사 참석★',detail:['인사','워크샵 취지 및 숏폼시장·비글루 소개','비밀유지계약서 작성 / 팀 짜기','[다음주 숙제] 아이템 정하기']},
       {no:'2',date:'7/13 (일)',time:'15:00–17:00',mode:'한국 offline · 일본 online · ★통역사 참석★',detail:['한지원 작가 강연 (1기 라이터스룸 졸업작가)','아이템 발표 / 피드백','[다음주 숙제] 무료회차 대본(1–10화)']},
@@ -251,7 +266,7 @@ const PROGRAM = {
     ],
     weeks:[
       {tag:'1주차',date:'7/6', rows:[['15:00–16:00','인사 / 워크샵 취지 및 숏폼시장·비글루 소개','—'],['16:00–16:15','쉬는 시간 / 비밀유지계약서 작성 (한국작가 대상)','—'],['16:15–16:20','팀 발표','—'],['16:20–16:25','[숙제내용 소개] 아이템 정하기 — AI 대본 / AI 드라마 아이템 / 히트작 장르별 추천(현대로맨스·로판·BL·남성향·애니메이션)','—'],['16:30–17:00','2주차 소개 및 마무리 / 담당 PD 컨택포인트 공유 / PD별 진행','—']],
-        hwTitle:'★ 2주차 숙제 : 아이템 정하기', hwBody:['1. 아이템 — 로그라인 + 줄거리 A4 (기·승·전·결 포함) + 캐릭터 설명','2. 장르 — 로맨스 / 로판 / 판타지 / BL / 애니메이션 / 남성향 중 택 1','제출기한 : 7/12(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
+        hwTitle:'★ 2주차 숙제 : 아이템 정하기', hwBody:['1. 아이템 — 로그라인 + 줄거리 A4 (기·승·전·결 포함) + 캐릭터 설명','2. 장르 — 로맨스 / 로판 / 판타지 / BL / 애니메이션 / 남성향 중 택 1','제출기한 : 7/12(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅'], hwLinks:[{label:'제출형식 샘플 DOCS 보기', url:'https://docs.google.com/document/d/14kDVPUOIKa_LL0kTKKA4OmAUoO8HwdgrI13wCAa1-ws/edit?usp=sharing', icon:'📄'}], hwSpecs:[{k:'발화 언어',v:'영어'},{k:'타겟',v:'글로벌 2050'}]},
       {tag:'2주차',date:'7/13',rows:[['15:00–16:00','한지원 작가 강연','—'],['16:00–16:10','쉬는 시간','—'],['16:10–16:50','작가 아이템 발표 / 피드백','—'],['16:50–17:00','3주차 과제 발표 / 마무리 (*비글루 내 평가 체크리스트 공유)','—']],
         hwTitle:'★ 3주차 숙제 : 무료회차(1–10) 대본', hwBody:['· 클리프행어 필수','· 히트작 대본 무료회차분 (*선정)','제출기한 : 7/19(일) EOD','제출형식 : 팀별 DOCS · 작가별 탭 · 탭명 앞 완료표시 ✅']},
       {tag:'3주차',date:'7/20',rows:[['15:00–15:45','인기작 광고소재 소개','—'],['15:45–16:00','쉬는 시간','—'],['16:00–17:00','팀별 피드백 (1명당 약 2분)','—']],
@@ -263,7 +278,7 @@ const PROGRAM = {
   },
   ja:{
     period:'7/6 ~ 7/27 · 毎週日曜 15:00–17:00',
-    finalNote:'最終原稿提出 8/9 EOD → 8/21(金) 内部レビュー後に契約可否を案内',
+    finalNote:['最終原稿提出 8/9 EOD','★ 8/21(金) 内部レビュー後に契約可否を案内'],
     overview:[
       {no:'1',date:'7/6 (日)', time:'15:00–17:00',mode:'韓国 offline · 日本 online · ★通訳同席★',detail:['挨拶','ワークショップ趣旨・ショートフォーム市場/ビグル紹介','秘密保持契約 / チーム編成','[来週の宿題] アイテム決め']},
       {no:'2',date:'7/13 (日)',time:'15:00–17:00',mode:'韓国 offline · 日本 online · ★通訳同席★',detail:['ハン・ジウォン作家 講演(1期ライターズルーム卒業作家)','アイテム発表 / フィードバック','[来週の宿題] 無料話 台本(1–10話)']},
@@ -272,7 +287,7 @@ const PROGRAM = {
     ],
     weeks:[
       {tag:'1週目',date:'7/6', rows:[['15:00–16:00','挨拶 / ワークショップ趣旨・ショートフォーム市場・ビグル紹介','—'],['16:00–16:15','休憩 / 秘密保持契約(韓国作家対象)','—'],['16:15–16:20','チーム発表','—'],['16:20–16:25','[宿題内容の紹介] アイテム決め — AI台本 / AIドラマのアイテム / ヒット作ジャンル別おすすめ(現代ロマンス・ロマンスファンタジー・BL・男性向・アニメ)','—'],['16:30–17:00','2週目案内・まとめ / 担当PDコンタクト共有 / PD別進行','—']],
-        hwTitle:'★ 2週目 宿題 : アイテム決め', hwBody:['1. アイテム — ログライン + あらすじ A4 (起承転結を含む) + キャラ説明','2. ジャンル — ロマンス / ロマンスファンタジー / ファンタジー / BL / アニメ / 男性向 から1つ','提出期限 : 7/12(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
+        hwTitle:'★ 2週目 宿題 : アイテム決め', hwBody:['1. アイテム — ログライン + あらすじ A4 (起承転結を含む) + キャラ説明','2. ジャンル — ロマンス / ロマンスファンタジー / ファンタジー / BL / アニメ / 男性向 から1つ','提出期限 : 7/12(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅'], hwLinks:[{label:'提出形式サンプルDOCSを見る', url:'https://docs.google.com/document/d/14kDVPUOIKa_LL0kTKKA4OmAUoO8HwdgrI13wCAa1-ws/edit?usp=sharing', icon:'📄'}], hwSpecs:[{k:'発話言語',v:'英語'},{k:'ターゲット',v:'グローバル 2050'}]},
       {tag:'2週目',date:'7/13',rows:[['15:00–16:00','ハン・ジウォン作家 講演','—'],['16:00–16:10','休憩','—'],['16:10–16:50','作家 アイテム発表 / フィードバック','—'],['16:50–17:00','3週目課題 発表 / まとめ (*ビグル内 評価チェックリスト共有)','—']],
         hwTitle:'★ 3週目 宿題 : 無料話(1–10) 台本', hwBody:['· クリフハンガー必須','· ヒット作 台本の無料話分 (*選定)','提出期限 : 7/19(日) EOD','提出形式 : チーム別DOCS · 作家別タブ · タブ名頭に完了表示 ✅']},
       {tag:'3週目',date:'7/20',rows:[['15:00–15:45','人気作の広告素材 紹介','—'],['15:45–16:00','休憩','—'],['16:00–17:00','チーム別フィードバック(1人 約2分)','—']],
@@ -303,7 +318,7 @@ const T = {
     rosterEmptyBody:'관리자로 로그인하면 이 화면에서 작가·DOCS 링크를 추가할 수 있습니다.',
     docsUnset:'DOCS 링크 미설정', docsOpen:'열기 ↗',
     phMemberName:'작가명', phMemberNote:'비고', addBtn:'＋ 추가', saveBtn:'저장',
-    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'삭제할까요?',
+    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'삭제할까요?', leadName:'담당자 이름',
     newTeamKey:'팀키(예: G)', addTeamBtn:'＋ 새 팀',
     pgRound:'회차', pgNotice:'📌 안내',
     cpTitle:'코멘트 남기기', cpHint:'한국어·일본어 어느 쪽으로 써도 양쪽 번역이 함께 저장됩니다.',
@@ -330,7 +345,7 @@ const T = {
     rosterEmptyBody:'管理者でログインすると、この画面から作家・DOCSリンクを追加できます。',
     docsUnset:'DOCSリンク未設定', docsOpen:'を開く ↗',
     phMemberName:'作家名', phMemberNote:'備考', addBtn:'＋ 追加', saveBtn:'保存',
-    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'削除しますか?',
+    cmLabel:'PD', docsLabel:'DOCS URL', delConfirm:'削除しますか?', leadName:'担当者名',
     newTeamKey:'チームキー(例: G)', addTeamBtn:'＋ 新規チーム',
     pgRound:'回', pgNotice:'📌 案内',
     cpTitle:'コメントを残す', cpHint:'韓国語・日本語どちらで書いても、両方の訳が一緒に保存されます。',
@@ -361,6 +376,7 @@ function tcolor(tm){ return TEAM_COLORS[tm] || '#5F6368'; }
 function flag(c){ const u=String(c||'').toUpperCase(); return u==='KR'?'🇰🇷':u==='JP'?'🇯🇵':'🏳️'; }
 function weekLabel(v){ return LANG==='ja' ? (WEEK_JA[v]||v) : v; }
 function prog(){ return PROGRAM[LANG] || PROGRAM.ko; }
+function hlDates(s){ return esc(s).replace(/(\d{1,2}\/\d{1,2}(?:\([^)]*\))?(?:\s?EOD)?)/g, '<b class="ndate">$1</b>'); }
 function val(id){ const el=document.getElementById(id); return el?el.value:''; }
 
 /* 번역 */
@@ -432,7 +448,7 @@ async function loadRoster(){
     if(tr.error||mr.error) throw (tr.error||mr.error);
     const teams=tr.data||[], members=mr.data||[];
     if(!teams.length){ STATE.roster = ROSTER.slice(); return; }
-    STATE.roster = teams.map(tt=>({ team:tt.team, cm:tt.cm||'', docsUrl:tt.docs_url||'',
+    STATE.roster = teams.map(tt=>({ team:tt.team, cm:tt.cm||'', docsUrl:tt.docs_url||'', leadRole:tt.lead_role||'pd',
       members: members.filter(m=>m.team===tt.team).map(m=>({ id:m.id, name:m.name, country:m.country||'KR', note:m.note||'' })) }));
   }catch(e){ STATE.roster = ROSTER.slice(); }
 }
@@ -488,7 +504,8 @@ function teamCard(x){
   if(STATE.isAdmin){
     admin =
       '<div class="team-edit" data-team="'+attr(x.team)+'">'+
-        '<input class="te-cm" value="'+attr(x.cm||'')+'" placeholder="'+attr(t('cmLabel'))+'">'+
+        '<select class="te-role">'+roleOptions(x.leadRole||'pd')+'</select>'+
+        '<input class="te-cm" value="'+attr(x.cm||'')+'" placeholder="'+attr(t('leadName'))+'">'+
         '<input class="te-docs" value="'+attr(x.docsUrl||'')+'" placeholder="'+attr(t('docsLabel'))+'">'+
         '<button class="smallbtn te-save" type="button">'+esc(t('saveBtn'))+'</button>'+
       '</div>'+
@@ -500,14 +517,16 @@ function teamCard(x){
       '</div>';
   }
   return '<div class="team" style="--tc:'+col+'"><div class="glyph">'+esc(x.team)+'</div>'+
-    '<div class="head"><span class="name">TEAM '+esc(x.team)+'</span><span class="cm">PD · '+esc(x.cm||'-')+'</span><span class="count">'+(x.members||[]).length+t('uPeople')+'</span></div>'+
+    '<div class="head"><span class="name">TEAM '+esc(x.team)+'</span><span class="cm">'+esc(roleLabel(x.leadRole||'pd'))+' · '+esc(x.cm||'-')+'</span><span class="count">'+(x.members||[]).length+t('uPeople')+'</span></div>'+
     '<div class="members">'+members+'</div>'+docs+admin+'</div>';
 }
+function roleOptions(cur){ return ['writer','pd'].map(v=>'<option value="'+v+'"'+(v===cur?' selected':'')+'>'+esc(roleLabel(v))+'</option>').join(''); }
 function newTeamCard(){
   return '<div class="team newteam" style="--tc:#9A9AB0">'+
     '<div class="mini" style="border-top:none;padding-top:0;margin-top:0">'+
       '<input id="nt-key" placeholder="'+attr(t('newTeamKey'))+'" style="max-width:120px">'+
-      '<input id="nt-cm" placeholder="'+attr(t('cmLabel'))+'">'+
+      '<select id="nt-role">'+roleOptions('pd')+'</select>'+
+      '<input id="nt-cm" placeholder="'+attr(t('leadName'))+'">'+
       '<button class="smallbtn" id="nt-add" type="button">'+esc(t('addTeamBtn'))+'</button>'+
     '</div></div>';
 }
@@ -517,13 +536,29 @@ function viewProgram(){
   const ov=p.overview.map(o=>'<div class="c"><div class="n">'+esc(t('pgRound'))+' '+esc(o.no)+'</div><div class="d">'+esc(o.date)+'</div><div class="t">'+esc(o.time)+'</div><div class="mode">'+esc(o.mode)+'</div><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul></div>').join('');
   const weeks=p.weeks.map((w,i)=>{
     const rows=w.rows.map(r=>'<div class="srow"><div class="tm">'+esc(r[0])+'</div><div>'+esc(r[1])+'</div></div>').join('');
-    const hb=w.hwBody.map(x=> /^(제출기한|提出期限)/.test(x) ? '<div><span class="deadline">⏰ '+esc(x)+'</span></div>' : '<div>'+esc(x)+'</div>').join('');
-    const hl=(w.hwLinks||[]).map(l=>'<a href="'+attr(l.url)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:9px;margin-right:10px;font-weight:800;color:#7A5C00;text-decoration:underline">📁 '+esc(l.label)+' ↗</a>').join('');
+    const hb=w.hwBody.map(x=>{
+      if(/^(제출기한|提出期限)/.test(x)) return '<div><span class="deadline">⏰ '+esc(x)+'</span></div>';
+      if(/^(제출형식|提出形式)/.test(x)) return '<div><span class="hwfmt">📄 '+esc(x)+'</span></div>';
+      const m=x.match(/^\s*(\d+)\.\s*(.+)$/);
+      if(m){
+        const num=m[1]; const parts=m[2].split(/\s[—–-]\s/);
+        const label=parts[0].trim(); const desc=parts.length>1?parts.slice(1).join(' — ').trim():'';
+        const gm=desc.match(/^(.*\/.*?)\s*(중\s*택\s*\d+|から\s*\d*\s*つ)\s*$/);
+        if(gm){
+          const chips=gm[1].split('/').map(s=>s.trim()).filter(Boolean).map(o=>'<span class="gchip">'+esc(o)+'</span>').join('');
+          return '<div class="hwcard"><div class="hwnum">'+esc(num)+'</div><div class="hwmain"><div class="hwlabel">'+esc(label)+' <span class="hwpick">'+esc(gm[2])+'</span></div><div class="hwchips">'+chips+'</div></div></div>';
+        }
+        const specs=(w.hwSpecs && /^(아이템|アイテム)/.test(label)) ? '<div class="hwspecs">'+w.hwSpecs.map(s=>'<span class="spec"><span class="sk">'+esc(s.k)+'</span><span class="sv">'+esc(s.v)+'</span></span>').join('')+'</div>' : '';
+        return '<div class="hwcard"><div class="hwnum">'+esc(num)+'</div><div class="hwmain"><div class="hwlabel">'+esc(label)+'</div>'+(desc?'<div class="hwdesc">'+esc(desc)+'</div>':'')+specs+'</div></div>';
+      }
+      return '<div>'+esc(x)+'</div>';
+    }).join('');
+    const hl=(w.hwLinks||[]).map(l=>'<a href="'+attr(l.url)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:9px;margin-right:10px;font-weight:800;color:#7A5C00;text-decoration:underline">'+esc(l.icon||'📁')+' '+esc(l.label)+' ↗</a>').join('');
     return '<details class="week"'+(i===0?' open':'')+'><summary><span class="wtag">'+esc(w.tag)+'</span><span class="wdate">'+esc(w.date)+'</span><span class="chev">▶</span></summary>'+
       '<div class="body">'+rows+'<div class="hw"><div class="ht">'+esc(w.hwTitle)+'</div><div class="hb">'+hb+'</div>'+hl+'</div></div></details>';
   }).join('');
   return '<div class="view"><div class="eyebrow">'+esc(t('ebProgram'))+' · '+esc(p.period)+'</div><div class="ov">'+ov+'</div>'+weeks+
-    '<div class="hw" style="margin-top:6px"><div class="ht">'+esc(t('pgNotice'))+'</div><div class="hb"><div>'+esc(p.finalNote)+'</div></div></div></div>';
+    '<div class="hw" style="margin-top:6px"><div class="ht">'+esc(t('pgNotice'))+'</div><div class="hb">'+(p.finalNote||[]).map(x=>'<div>'+hlDates(x)+'</div>').join('')+'</div></div></div>';
 }
 
 function viewFeedback(){
@@ -591,7 +626,7 @@ function wireAdmin(){
   }));
   document.querySelectorAll('.te-save').forEach(el=> el.addEventListener('click', ()=>{
     const box=el.closest('.team-edit');
-    saveTeam(box.getAttribute('data-team'), box.querySelector('.te-cm').value, box.querySelector('.te-docs').value);
+    saveTeam(box.getAttribute('data-team'), box.querySelector('.te-role').value, box.querySelector('.te-cm').value, box.querySelector('.te-docs').value);
   }));
   const nt=document.getElementById('nt-add'); if(nt) nt.addEventListener('click', addTeam);
 }
@@ -616,14 +651,14 @@ async function delMember(id){
   try{ const {error}=await db.from('members').delete().eq('id',id); if(error) throw error; await loadRoster(); render(); }
   catch(e){ alert(t('msgFail')); }
 }
-async function saveTeam(team,cm,docs){
-  try{ const {error}=await db.from('teams').update({cm:(cm||'').trim(),docs_url:(docs||'').trim()}).eq('team',team); if(error) throw error; await loadRoster(); render(); }
+async function saveTeam(team,role,cm,docs){
+  try{ const {error}=await db.from('teams').update({lead_role:role||'pd',cm:(cm||'').trim(),docs_url:(docs||'').trim()}).eq('team',team); if(error) throw error; await loadRoster(); render(); }
   catch(e){ alert(t('msgFail')); }
 }
 async function addTeam(){
-  const key=(val('nt-key')||'').trim().toUpperCase(); const cm=(val('nt-cm')||'').trim();
+  const key=(val('nt-key')||'').trim().toUpperCase(); const cm=(val('nt-cm')||'').trim(); const role=val('nt-role')||'pd';
   if(!key) return;
-  try{ const {error}=await db.from('teams').insert({team:key,cm:cm,sort:99}); if(error) throw error; await loadRoster(); render(); }
+  try{ const {error}=await db.from('teams').insert({team:key,cm:cm,lead_role:role,sort:99}); if(error) throw error; await loadRoster(); render(); }
   catch(e){ alert(t('msgFail')); }
 }
 
